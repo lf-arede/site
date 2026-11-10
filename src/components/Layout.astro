@@ -1,0 +1,110 @@
+---
+import "@fontsource-variable/inter";
+import "@fontsource-variable/space-grotesk";
+import "@fontsource-variable/jetbrains-mono";
+import "../styles/global.css";
+import Analytics from "@vercel/analytics/astro";
+import { getRelativeLocaleUrl } from "astro:i18n";
+import { contact, copy, type Lang } from "../content";
+
+interface Props {
+  lang: Lang;
+  /** Path after the locale prefix, e.g. "" or "lab/". */
+  path: string;
+  title: string;
+  description: string;
+}
+
+const { lang, path, title, description } = Astro.props;
+const t = copy[lang];
+const ptUrl = getRelativeLocaleUrl("pt", path);
+const enUrl = getRelativeLocaleUrl("en", path);
+const homeUrl = getRelativeLocaleUrl(lang);
+const labUrl = getRelativeLocaleUrl(lang, "lab/");
+const canonical = new URL(lang === "pt" ? ptUrl : enUrl, Astro.site);
+const ogImage = new URL(lang === "pt" ? "/og.png" : "/og-en.png", Astro.site);
+const wa = contact.whatsapp(t.cta.message);
+const year = new Date().getFullYear();
+const anchor = (id: string) => (path === "" ? `#${id}` : `${homeUrl}#${id}`);
+---
+
+<!doctype html>
+<html lang={lang === "pt" ? "pt-BR" : "en"}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="canonical" href={canonical} />
+    <link rel="alternate" hreflang="pt-BR" href={new URL(ptUrl, Astro.site)} />
+    <link rel="alternate" hreflang="en" href={new URL(enUrl, Astro.site)} />
+    <link rel="alternate" hreflang="x-default" href={new URL(ptUrl, Astro.site)} />
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content={lang === "pt" ? "pt_BR" : "en_US"} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="theme-color" content="#f7f6f3" />
+    <Analytics />
+  </head>
+  <body>
+    <header class="wrap top">
+      <a class="brand mono" href={homeUrl}><span class="accent">~/</span>felipe-arede</a>
+      <nav aria-label={t.nav.main} class="nav">
+        <a class="ulink hide-sm" href={anchor("como-funciona")}>{t.nav.how}</a>
+        <a class="ulink hide-sm" href={anchor("cases")}>{t.nav.cases}</a>
+        <a class="ulink hide-sm" href={anchor("duvidas")}>{t.nav.faq}</a>
+        <div class="lang" role="group" aria-label={t.nav.language}>
+          <a href={ptUrl} hreflang="pt-BR" aria-current={lang === "pt" ? "page" : undefined}>PT</a>
+          <a href={enUrl} hreflang="en" aria-current={lang === "en" ? "page" : undefined}>EN</a>
+        </div>
+        <a class="btn btn-sm hide-sm" href={wa} rel="noopener" data-track="header">{t.cta.label}</a>
+      </nav>
+    </header>
+
+    <slot />
+
+    <footer class="wrap foot mono">
+      <span>© {year} felipe arede · {t.footer.place}</span>
+      <span class="foot-links">
+        <a class="ulink" href={labUrl}>{t.footer.lab}</a>
+        <a class="ulink" href={contact.linkedin} rel="noopener">LinkedIn</a>
+        <a class="ulink" href={contact.github} rel="noopener">GitHub</a>
+      </span>
+    </footer>
+
+    <div class="sticky-cta">
+      <a class="btn btn-wide" href={wa} rel="noopener" data-track="sticky">{t.cta.mobile}</a>
+    </div>
+
+    <script>
+      import { track } from "@vercel/analytics";
+
+      for (const link of document.querySelectorAll<HTMLAnchorElement>("[data-track]")) {
+        link.addEventListener("click", () => {
+          track("whatsapp_click", { location: link.dataset.track ?? "unknown" });
+        });
+      }
+
+      for (const button of document.querySelectorAll<HTMLButtonElement>("[data-copy]")) {
+        let timer: ReturnType<typeof setTimeout> | undefined;
+        button.addEventListener("click", async () => {
+          try {
+            await navigator.clipboard.writeText(button.dataset.copy ?? "");
+          } catch {
+            window.location.href = `mailto:${button.dataset.copy}`;
+            return;
+          }
+          button.textContent = button.dataset.done ?? "";
+          clearTimeout(timer);
+          timer = setTimeout(() => (button.textContent = button.dataset.label ?? ""), 2000);
+        });
+      }
+    </script>
+  </body>
+</html>

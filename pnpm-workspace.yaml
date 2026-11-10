@@ -1,0 +1,4 @@
+allowBuilds:
+  # esbuild and sharp only re-check their platform binaries, which optionalDependencies already install.
+  esbuild: false
+  sharp: false

@@ -1,0 +1,190 @@
+---
+import Layout from "./Layout.astro";
+import { assets, contact, copy, type Lang } from "../content";
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const t = copy[lang];
+const wa = contact.whatsapp(t.cta.message);
+const dev = import.meta.env.DEV;
+const showSample = assets.sampleReport !== null || dev;
+const showPhoto = assets.photo !== null || dev;
+const copyLabel = lang === "pt" ? "Copiar e-mail" : "Copy email";
+const copiedLabel = lang === "pt" ? "E-mail copiado ✓" : "Email copied ✓";
+---
+
+<Layout lang={lang} path="" title={t.meta.title} description={t.meta.description}>
+  <main>
+    <section class="wrap hero">
+      <div class="hero-text">
+        <p class="eyebrow up">{t.hero.eyebrow}</p>
+        <h1 class="display up" style="animation-delay:.1s">
+          {t.hero.title}<span class="accent">{t.hero.titleAccent}</span><span class="caret caret-title" aria-hidden="true"></span>
+        </h1>
+        <p class="lead up" style="animation-delay:.2s">{t.hero.lead}</p>
+        <div class="actions up" style="animation-delay:.3s">
+          <a class="btn" href={wa} rel="noopener" data-track="hero">
+            {t.cta.label}
+            <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
+          </a>
+          <a class="ulink btn-ghost" href="#como-funciona">{t.hero.secondary}</a>
+        </div>
+      </div>
+
+      <div class="term mono up" style="animation-delay:.35s" aria-hidden="true">
+        <div class="term-bar"><span></span><span></span><span></span></div>
+        <div class="term-body">
+          <p class="term-cmd"><span class="accent">$&nbsp;</span><span class="typed" style={`--n:${t.term.cmd.length}`}>{t.term.cmd}</span></p>
+          <div class="term-out">
+            {t.term.rows.map(([k, v]) => (
+              <p><span class="muted">{k.padEnd(8, " ")}</span>{v}</p>
+            ))}
+            <p><span class="accent">$&nbsp;</span><span class="caret caret-term"></span></p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="wrap segments-wrap" aria-labelledby="segmentos">
+      <h2 id="segmentos" class="label">{t.segments.title}</h2>
+      <div class="segments">
+        {t.segments.items.map((s) => (
+          <a class="segment" href={contact.whatsapp(s.message)} rel="noopener" data-track={`segment-${s.id}`}>
+            <h3 class="display">{s.title}</h3>
+            <p><span class="muted">{t.segments.have}</span> {s.data}</p>
+            <p><span class="muted">{t.segments.find}</span> {s.result}</p>
+            <span class="segment-go">{t.segments.go} <span aria-hidden="true">→</span></span>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <section id="diagnostico" class="wrap block offer">
+      <p class="kicker">{t.offer.kicker}</p>
+      <h2 class="section-title display">{t.offer.title}</h2>
+      <p class="section-lead">{t.offer.lead}</p>
+
+      <div class="offer-grid">
+        <div class="offer-send">
+          <h3 class="label">{t.offer.sendTitle}</h3>
+          <p>{t.offer.send}</p>
+          <dl class="facts">
+            {t.offer.facts.map(([k, v]) => (
+              <div><dt>{k}</dt><dd>{v}</dd></div>
+            ))}
+          </dl>
+        </div>
+        <div class="offer-get">
+          <h3 class="label">{t.offer.getTitle}</h3>
+          <ul class="get-list">
+            {t.offer.get.map((g) => (
+              <li><strong>{g.title}</strong><span>{g.text}</span></li>
+            ))}
+          </ul>
+        </div>
+      </div>
+
+      {showSample && (
+        assets.sampleReport
+          ? <img class="sample" src={assets.sampleReport} alt={t.offer.title} loading="lazy" />
+          : <div class="placeholder sample">{t.offer.samplePending}</div>
+      )}
+
+      <p class="proof mono">{t.offer.proof}</p>
+      <a class="btn" href={wa} rel="noopener" data-track="offer">{t.cta.label}</a>
+    </section>
+
+    {t.storeCase && (
+      <section class="wrap store-case" aria-label={t.storeCase.label}>
+        <p class="kicker">{t.storeCase.label}</p>
+        <p class="store-case-title display">{t.storeCase.title}</p>
+        <p class="section-lead">{t.storeCase.text}</p>
+      </section>
+    )}
+
+    <section id="como-funciona" class="wrap block">
+      <h2 class="section-title display">{t.steps.title}</h2>
+      <ol class="steps">
+        {t.steps.items.map((s, i) => (
+          <li class="step">
+            <span class="step-n mono">0{i + 1}</span>
+            <h3 class="display">{s.title}</h3>
+            <p>{s.text}</p>
+          </li>
+        ))}
+      </ol>
+    </section>
+
+    <section id="quem-faz" class="wrap block about">
+      {showPhoto && (
+        assets.photo
+          ? <img class="photo" src={assets.photo} alt="Felipe Arede" width="220" height="220" loading="lazy" />
+          : <div class="placeholder photo">{t.about.photoPending}</div>
+      )}
+      <div class="about-text">
+        <h2 class="section-title display">{t.about.title}</h2>
+        <p class="section-lead">{t.about.text}</p>
+        <div class="numbers">
+          {t.about.numbers.map((n) => (
+            <div class="number">
+              <p class="number-value display">{n.value}</p>
+              <p class="number-text">{n.text}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <section id="cases" class="wrap block">
+      <h2 class="section-title display">{t.cases.title}</h2>
+      <p class="section-lead">{t.cases.lead}</p>
+      <div class="rows">
+        {t.cases.items.map((c) => (
+          <article class="row">
+            <h3 class="display">{c.title}</h3>
+            <p>{c.text}</p>
+            <span class="tag mono">[{c.tag}]</span>
+          </article>
+        ))}
+      </div>
+      <details class="more">
+        <summary>{t.cases.more}</summary>
+        <div class="rows">
+          {t.services.items.map((c) => (
+            <article class="row">
+              <h3 class="display">{c.title}</h3>
+              <p>{c.text}</p>
+              <span class="tag mono">[{c.tag}]</span>
+            </article>
+          ))}
+        </div>
+      </details>
+    </section>
+
+    <section id="duvidas" class="wrap block">
+      <h2 class="section-title display">{t.faq.title}</h2>
+      <div class="faq">
+        {t.faq.items.map((f) => (
+          <details class="faq-item">
+            <summary class="display">{f.q}</summary>
+            <p>{f.a}</p>
+          </details>
+        ))}
+      </div>
+    </section>
+
+    <section id="contato" class="wrap block final">
+      <h2 class="final-title display">{t.final.title}</h2>
+      <p class="section-lead">{t.final.text}</p>
+      <a class="btn btn-lg" href={wa} rel="noopener" data-track="final">{t.cta.label}</a>
+      <p class="alt">
+        {t.final.alt}
+        <a class="ulink" href={`mailto:${contact.email}`}>{contact.email}</a>
+        <button type="button" class="link-btn" data-copy={contact.email} data-label={copyLabel} data-done={copiedLabel}>{copyLabel}</button>
+      </p>
+    </section>
+  </main>
+</Layout>

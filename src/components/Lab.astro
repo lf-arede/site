@@ -1,0 +1,30 @@
+---
+import Layout from "./Layout.astro";
+import { getRelativeLocaleUrl } from "astro:i18n";
+import { copy, type Lang } from "../content";
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const t = copy[lang];
+---
+
+<Layout lang={lang} path="lab/" title={t.lab.metaTitle} description={t.lab.lead}>
+  <main class="wrap lab-page">
+    <p class="prompt mono"><span class="accent">$</span> ls lab/</p>
+    <h1 class="section-title display">{t.lab.title}</h1>
+    <p class="section-lead">{t.lab.lead}</p>
+    <div class="rows">
+      {t.lab.items.map((p) => (
+        <article class="row">
+          <h2 class="display">{p.title}</h2>
+          <p>{p.text}</p>
+          <span class="tag mono">[{p.tag}]</span>
+        </article>
+      ))}
+    </div>
+    <p class="back"><a class="ulink" href={getRelativeLocaleUrl(lang)}>← {t.lab.back}</a></p>
+  </main>
+</Layout>
