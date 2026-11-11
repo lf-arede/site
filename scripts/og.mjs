@@ -1,4 +1,5 @@
-// Renders the link-preview images (public/og.png and public/og-en.png).
+// Renders the link-preview images (public/og.png and public/og-en.png)
+// and the PNG icons made from public/favicon.svg.
 // Run with `pnpm og` after changing the headline; the PNGs are committed.
 import sharp from "sharp";
 
@@ -23,4 +24,14 @@ for (const v of variants) {
 </svg>`;
   await sharp(Buffer.from(svg)).png().toFile(v.file);
   console.log(`wrote ${v.file}`);
+}
+
+// PNG icons for browsers and iOS home screens that do not use the SVG favicon.
+const icon = await import("node:fs/promises").then((fs) => fs.readFile("public/favicon.svg"));
+for (const [file, size] of [["public/favicon-96.png", 96], ["public/apple-touch-icon.png", 180]]) {
+  // iOS rounds the corners itself, so the apple icon gets a solid background.
+  const img = sharp(icon, { density: 72 * (size / 64) }).resize(size, size);
+  if (file.includes("apple")) img.flatten({ background: "#16161a" });
+  await img.png().toFile(file);
+  console.log(`wrote ${file}`);
 }

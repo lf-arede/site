@@ -70,7 +70,7 @@ export const copy: Record<Lang, Copy> = {
     meta: {
       title: "Diagnóstico de vendas em 7 dias · Felipe Arede",
       description:
-        "Análise de vendas, clientes e concorrência para quem não tem uma área de dados. Varejo, provedores de internet e times comerciais. Diagnóstico em 7 dias com 5 ações priorizadas.",
+        "Análise de vendas, clientes e concorrência para quem não tem área de dados. Diagnóstico em 7 dias, com 5 ações priorizadas, feito com as suas notas fiscais.",
     },
     nav: { how: "Como funciona", cases: "Cases", faq: "Dúvidas", language: "Idioma", main: "Principal" },
     cta: {
@@ -252,7 +252,7 @@ export const copy: Record<Lang, Copy> = {
     meta: {
       title: "7-day sales diagnosis · Felipe Arede",
       description:
-        "Sales, customer and competitor analysis for companies without a data team. Retail, internet providers and sales teams. A diagnosis in 7 days with 5 prioritized actions.",
+        "Sales, customer and competitor analysis for companies without a data team. A 7-day diagnosis with 5 prioritized actions, built from your invoices.",
     },
     nav: { how: "How it works", cases: "Cases", faq: "FAQ", language: "Language", main: "Main" },
     cta: {
