@@ -1,0 +1,20 @@
+---
+import Layout from "../components/Layout.astro";
+import { getRelativeLocaleUrl } from "astro:i18n";
+import { copy } from "../content";
+
+// Vercel serves this single page for every missing URL, so it carries both languages.
+const pt = copy.pt.notFound;
+const en = copy.en.notFound;
+---
+
+<Layout lang="pt" path="404/" title={pt.metaTitle} description={pt.text} noindex>
+  <main class="wrap lab-page">
+    <p class="prompt mono"><span class="accent">$</span> curl -I <span class="muted">→ 404 not found</span></p>
+    <h1 class="section-title display">{pt.title}</h1>
+    <p class="section-lead">{pt.text}</p>
+    <p class="back"><a class="ulink" href={getRelativeLocaleUrl("pt")}>← {pt.back}</a></p>
+    <p class="section-lead" lang="en">{en.title}. {en.text}</p>
+    <p class="back"><a class="ulink" href={getRelativeLocaleUrl("en")} lang="en">← {en.back}</a></p>
+  </main>
+</Layout>

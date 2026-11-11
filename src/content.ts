@@ -55,6 +55,7 @@ type Copy = {
   faq: { title: string; items: Faq[] };
   final: { title: string; text: string; alt: string };
   footer: { place: string; lab: string };
+  notFound: { metaTitle: string; title: string; text: string; back: string };
   lab: {
     metaTitle: string;
     title: string;
@@ -227,6 +228,12 @@ export const copy: Record<Lang, Copy> = {
       alt: "Prefere e-mail?",
     },
     footer: { place: "Rio de Janeiro", lab: "Projetos pessoais" },
+    notFound: {
+      metaTitle: "Página não encontrada · Felipe Arede",
+      title: "Essa página não existe",
+      text: "O endereço pode ter mudado ou estar com erro de digitação.",
+      back: "Voltar para o início",
+    },
     lab: {
       metaTitle: "Projetos pessoais · Felipe Arede",
       title: "Projetos pessoais",
@@ -403,6 +410,12 @@ export const copy: Record<Lang, Copy> = {
       alt: "Prefer email?",
     },
     footer: { place: "Rio de Janeiro, Brazil", lab: "Side projects" },
+    notFound: {
+      metaTitle: "Page not found · Felipe Arede",
+      title: "This page does not exist",
+      text: "The address may have changed or have a typo.",
+      back: "Back to the home page",
+    },
     lab: {
       metaTitle: "Side projects · Felipe Arede",
       title: "Side projects",

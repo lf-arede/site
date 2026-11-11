@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://arede.cloud/sitemap-index.xml

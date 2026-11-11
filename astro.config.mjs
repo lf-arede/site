@@ -1,5 +1,6 @@
 // @ts-check
 import { defineConfig } from "astro/config";
+import sitemap from "@astrojs/sitemap";
 
 export default defineConfig({
   site: "https://arede.cloud",
@@ -10,4 +11,13 @@ export default defineConfig({
       prefixDefaultLocale: false,
     },
   },
+  integrations: [
+    sitemap({
+      filter: (page) => !page.includes("/404"),
+      i18n: {
+        defaultLocale: "pt",
+        locales: { pt: "pt-BR", en: "en" },
+      },
+    }),
+  ],
 });

@@ -13,19 +13,53 @@ interface Props {
   path: string;
   title: string;
   description: string;
+  /** Error pages: no canonical, hreflang or structured data, and kept out of search. */
+  noindex?: boolean;
 }
 
-const { lang, path, title, description } = Astro.props;
+const { lang, path, title, description, noindex = false } = Astro.props;
 const t = copy[lang];
-const ptUrl = getRelativeLocaleUrl("pt", path);
-const enUrl = getRelativeLocaleUrl("en", path);
+const ptUrl = getRelativeLocaleUrl("pt", noindex ? "" : path);
+const enUrl = getRelativeLocaleUrl("en", noindex ? "" : path);
 const homeUrl = getRelativeLocaleUrl(lang);
 const labUrl = getRelativeLocaleUrl(lang, "lab/");
 const canonical = new URL(lang === "pt" ? ptUrl : enUrl, Astro.site);
 const ogImage = new URL(lang === "pt" ? "/og.png" : "/og-en.png", Astro.site);
 const wa = contact.whatsapp(t.cta.message);
 const year = new Date().getFullYear();
-const anchor = (id: string) => (path === "" ? `#${id}` : `${homeUrl}#${id}`);
+const anchor = (id: string) => (path === "" && !noindex ? `#${id}` : `${homeUrl}#${id}`);
+
+// Structured data for the home pages only, so search engines read the offer.
+const jsonLd =
+  path === "" && !noindex
+    ? {
+        "@context": "https://schema.org",
+        "@type": "ProfessionalService",
+        "@id": new URL("/#business", Astro.site).href,
+        name: "Felipe Arede",
+        url: canonical.href,
+        description,
+        image: ogImage.href,
+        inLanguage: lang === "pt" ? "pt-BR" : "en",
+        areaServed: { "@type": "Country", name: "Brazil" },
+        availableLanguage: ["pt-BR", "en"],
+        sameAs: [contact.linkedin, contact.github],
+        founder: {
+          "@type": "Person",
+          name: "Felipe Arede",
+          jobTitle: lang === "pt" ? "Analista de dados e estratégia" : "Data and strategy analyst",
+          sameAs: [contact.linkedin, contact.github],
+        },
+        makesOffer: {
+          "@type": "Offer",
+          itemOffered: {
+            "@type": "Service",
+            name: t.offer.title,
+            description: t.offer.lead,
+          },
+        },
+      }
+    : null;
 ---
 
 <!doctype html>
@@ -36,10 +70,16 @@ const anchor = (id: string) => (path === "" ? `#${id}` : `${homeUrl}#${id}`);
     <title>{title}</title>
     <meta name="description" content={description} />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link rel="canonical" href={canonical} />
-    <link rel="alternate" hreflang="pt-BR" href={new URL(ptUrl, Astro.site)} />
-    <link rel="alternate" hreflang="en" href={new URL(enUrl, Astro.site)} />
-    <link rel="alternate" hreflang="x-default" href={new URL(ptUrl, Astro.site)} />
+    {noindex ? (
+      <meta name="robots" content="noindex" />
+    ) : (
+      <>
+        <link rel="canonical" href={canonical} />
+        <link rel="alternate" hreflang="pt-BR" href={new URL(ptUrl, Astro.site)} />
+        <link rel="alternate" hreflang="en" href={new URL(enUrl, Astro.site)} />
+        <link rel="alternate" hreflang="x-default" href={new URL(ptUrl, Astro.site)} />
+      </>
+    )}
     <meta property="og:type" content="website" />
     <meta property="og:locale" content={lang === "pt" ? "pt_BR" : "en_US"} />
     <meta property="og:title" content={title} />
@@ -50,6 +90,7 @@ const anchor = (id: string) => (path === "" ? `#${id}` : `${homeUrl}#${id}`);
     <meta property="og:image:height" content="630" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="theme-color" content="#f7f6f3" />
+    {jsonLd && <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />}
     <Analytics />
   </head>
   <body>
